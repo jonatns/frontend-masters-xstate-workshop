@@ -1,20 +1,33 @@
-import { createMachine } from 'xstate';
+import { createMachine } from "xstate";
 
-const elBox = document.querySelector('#box');
+const elBox = document.querySelector("#box");
 
-const machine = createMachine({
-  // Add your object machine definition here
+const clickMachine = createMachine({
+  initial: "inactive",
+  states: {
+    inactive: {
+      on: {
+        CLICK: "active",
+      },
+    },
+    active: {
+      on: {
+        CLICK: "inactive",
+      },
+    },
+  },
 });
 
-// Change this to the initial state
-let currentState = undefined;
+let currentState = clickMachine.initial;
 
-function send(event) {
-  // Determine and update the `currentState`
+const send = (event) => {
+  const nextState = clickMachine.transition(currentState, event);
 
-  elBox.dataset.state = currentState.value;
-}
+  currentState = nextState.value;
 
-elBox.addEventListener('click', () => {
-  // Send a click event
+  elBox.dataset.state = currentState;
+};
+
+elBox.addEventListener("click", () => {
+  send("CLICK");
 });
